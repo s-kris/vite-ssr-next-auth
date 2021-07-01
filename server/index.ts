@@ -1,5 +1,8 @@
 import express from "express";
 import { createPageRender } from "vite-plugin-ssr";
+import fetch from 'node-fetch';
+
+global.fetch = fetch;
 
 const isProduction = process.env.NODE_ENV === "production";
 const root = `${__dirname}/..`;

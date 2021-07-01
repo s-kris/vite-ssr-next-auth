@@ -2,6 +2,9 @@ import ReactDOM from "react-dom";
 import React from "react";
 import { getPage } from "vite-plugin-ssr/client";
 import { PageLayout } from "./PageLayout";
+import process from 'process';
+
+window.process = process;
 
 hydrate();
 
