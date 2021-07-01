@@ -1,19 +1,26 @@
 import React from "react";
-import { Counter } from "./_components/Counter";
+import { useSession } from 'next-auth/client';
 
 export { Page };
 
 function Page() {
+  const [session, loading] = useSession();
+
+  if (loading) {
+    return <p>loading...</p>
+  }
+
+  if (!session) {
+    return <>
+      <h1>Who are you?</h1>
+      <a href="/api/auth/signin"><button>sign in</button></a>
+    </>
+  }
+
   return (
     <>
-      <h1>Welcome</h1>
-      This page is:
-      <ul>
-        <li>Rendered to HTML.</li>
-        <li>
-          Interactive. <Counter />
-        </li>
-      </ul>
+      <h1>{`Hola ${session.user.name}`}</h1>
+      <a href="/api/auth/signout"><button>sign out</button></a>
     </>
   );
 }
