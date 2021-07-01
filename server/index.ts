@@ -1,6 +1,13 @@
+require('dotenv').config();
+
 import express from "express";
 import { createPageRender } from "vite-plugin-ssr";
 import fetch from 'node-fetch';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import NextAuthHandler from './auth/next';
+
+
 
 global.fetch = fetch;
 
@@ -11,6 +18,9 @@ startServer();
 
 async function startServer() {
   const app = express();
+  app.use(bodyParser.urlencoded({ extended: false }))
+  app.use(bodyParser.json())
+  app.use(cookieParser())
 
   let viteDevServer;
   if (isProduction) {
@@ -25,6 +35,23 @@ async function startServer() {
   }
 
   const renderPage = createPageRender({ viteDevServer, isProduction, root });
+
+  app.get("/api/auth/*", (req, res) => {
+    const nextauth = req.path.split("/");
+    nextauth.splice(0, 3);
+    req.query.nextauth = nextauth;
+
+    NextAuthHandler(req, res)
+  });
+
+  app.post("/api/auth/*", (req, res) => {
+    const nextauth = req.path.split("/");
+    nextauth.splice(0, 3);
+    req.query.nextauth = nextauth;
+
+    NextAuthHandler(req, res)
+  });
+
   app.get("*", async (req, res, next) => {
     const url = req.originalUrl;
     const pageContext = {
